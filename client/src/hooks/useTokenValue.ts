@@ -6,14 +6,12 @@ interface TokenData {
   usdValue: number;
   balance: number;
   price: number;
+  timestamp?: number;
 }
 
 export default function useTokenValue(walletAddress: string, tokenAddress: string) {
-  const [previousData, setPreviousData] = useState<{
-    usdValue: number;
-    balance: number;
-    price: number;
-  } | null>(null);
+  const [previousData, setPreviousData] = useState<TokenData | null>(null);
+  const [dayStartData, setDayStartData] = useState<TokenData | null>(null);
 
   const {
     data: tokenData,
@@ -61,7 +59,8 @@ export default function useTokenValue(walletAddress: string, tokenAddress: strin
           return {
             usdValue,
             balance,
-            price
+            price,
+            timestamp: Date.now()
           };
         }
         
@@ -84,16 +83,21 @@ export default function useTokenValue(walletAddress: string, tokenAddress: strin
   // Store previous data for change calculation
   useEffect(() => {
     if (tokenData) {
-      if (!previousData) {
-        // Initial values
-        setPreviousData(tokenData);
-      } else if (
-        tokenData.usdValue !== previousData.usdValue ||
-        tokenData.balance !== previousData.balance ||
-        tokenData.price !== previousData.price
+      // Update previous data for immediate changes
+      if (!previousData || 
+          tokenData.usdValue !== previousData.usdValue ||
+          tokenData.balance !== previousData.balance ||
+          tokenData.price !== previousData.price
       ) {
-        // Update when any value changes
         setPreviousData(tokenData);
+      }
+      
+      // Update 24-hour reference point
+      if (!dayStartData || 
+          (tokenData.timestamp && dayStartData.timestamp && 
+           tokenData.timestamp - dayStartData.timestamp >= 24 * 60 * 60 * 1000)
+      ) {
+        setDayStartData(tokenData);
       }
     }
   }, [tokenData]);
