@@ -2,15 +2,6 @@
 import { Connection, PublicKey } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID, getAccount } from '@solana/spl-token';
 
-// Use public Solana RPC endpoint
-const SOLANA_RPC_URL = 'https://api.mainnet-beta.solana.com';
-
-// Browser-compatible Buffer
-import { Buffer } from 'buffer/';
-if (typeof window !== 'undefined') {
-  window.Buffer = Buffer;
-}
-
 // Define interfaces
 interface TokenMetadata {
   price: number;
@@ -26,8 +17,8 @@ interface TokenAccountInfo {
   decimals: number;
 }
 
-// Initialize Solana connection
-const connection = new Connection(SOLANA_RPC_URL, 'confirmed');
+// Initialize Solana connection (using public RPC endpoint)
+const connection = new Connection('https://api.mainnet-beta.solana.com');
 
 // Get token account for a specific wallet and token
 async function getTokenAccount(walletAddress: string, tokenMint: string) {
