@@ -20,7 +20,8 @@ export default function TokenValueTracker({ walletAddress, tokenAddress }: Token
     isLoading, 
     isError, 
     refetch,
-    previousData
+    previousData,
+    dayStartData
   } = useTokenValue(walletAddress, tokenAddress);
 
   const handleRefresh = useCallback(() => {

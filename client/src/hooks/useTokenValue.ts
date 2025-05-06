@@ -107,6 +107,7 @@ export default function useTokenValue(walletAddress: string, tokenAddress: strin
     isLoading,
     isError,
     refetch,
-    previousData
+    previousData,
+    dayStartData
   };
 }
