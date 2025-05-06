@@ -13,15 +13,15 @@
   --card-foreground: 20 14.3% 4.1%;
   --border: 20 5.9% 90%;
   --input: 20 5.9% 90%;
-  --primary: 14 78% 54%; /* Orange theme color: e95f2b */
+  --primary: 49 86% 66%; /* Yellow theme color: f3cf5f */
   --primary-foreground: 0 0% 100%;
   --secondary: 60 4.8% 95.9%;
   --secondary-foreground: 24 9.8% 10%;
-  --accent: 14 78% 54%; /* Orange theme color */
+  --accent: 49 86% 66%; /* Yellow theme color */
   --accent-foreground: 0 0% 100%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 60 9.1% 97.8%;
-  --ring: 14 78% 54%; /* Orange theme color */
+  --ring: 49 86% 66%; /* Yellow theme color */
   --radius: 0.5rem;
 }
 
@@ -36,15 +36,15 @@
   --card-foreground: 0 0% 98%;
   --border: 240 3.7% 15.9%;
   --input: 240 3.7% 15.9%;
-  --primary: 14 78% 54%; /* Orange theme color: e95f2b */
+  --primary: 49 86% 66%; /* Yellow theme color: f3cf5f */
   --primary-foreground: 0 0% 100%;
   --secondary: 240 3.7% 15.9%;
   --secondary-foreground: 0 0% 98%;
-  --accent: 14 78% 54%; /* Orange theme color */
+  --accent: 49 86% 66%; /* Yellow theme color */
   --accent-foreground: 0 0% 100%;
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 0% 98%;
-  --ring: 14 78% 54%; /* Orange theme color */
+  --ring: 49 86% 66%; /* Yellow theme color */
   --radius: 0.5rem;
 }
 
