@@ -1,10 +1,9 @@
 
-import { Buffer } from 'buffer';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID, getAccount } from '@solana/spl-token';
 
-// Polyfill Buffer for browser
-window.Buffer = Buffer;
+// Use a more reliable RPC endpoint
+const SOLANA_RPC_URL = 'https://solana-mainnet.g.alchemy.com/v2/demo';
 
 // Define interfaces
 interface TokenMetadata {
@@ -21,8 +20,8 @@ interface TokenAccountInfo {
   decimals: number;
 }
 
-// Initialize Solana connection (using public RPC endpoint)
-const connection = new Connection('https://api.devnet.solana.com');
+// Initialize Solana connection
+const connection = new Connection(SOLANA_RPC_URL, 'confirmed');
 
 // Get token account for a specific wallet and token
 async function getTokenAccount(walletAddress: string, tokenMint: string) {
