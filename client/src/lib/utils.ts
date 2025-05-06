@@ -27,12 +27,12 @@ export function formatNumber(value: number): string {
  * Format token price (often very small numbers)
  */
 export function formatTokenPrice(value: number): string {
-  // Always use 6 decimal places for consistency
+  // Display with 7 decimal places
   return new Intl.NumberFormat('en-US', { 
     style: 'currency', 
     currency: 'USD',
-    minimumFractionDigits: 6,
-    maximumFractionDigits: 6
+    minimumFractionDigits: 7,
+    maximumFractionDigits: 7
   }).format(value);
 }
 

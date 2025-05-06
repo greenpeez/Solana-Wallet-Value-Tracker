@@ -69,12 +69,12 @@ export default function useTokenValue(walletAddress: string, tokenAddress: strin
       }
     },
     refetchOnWindowFocus: true,
-    refetchInterval: 20 * 1000, // 20 seconds auto-refresh for more real-time data
-    staleTime: 10 * 1000, // 10 seconds
+    refetchInterval: 10 * 1000, // 10 seconds auto-refresh for even more real-time data
+    staleTime: 5 * 1000, // 5 seconds
     retry: 3,
     retryDelay: 1000,
     // Make query more aggressive to get real-time data
-    gcTime: 10 * 1000 // v5 renamed cacheTime to gcTime
+    gcTime: 5 * 1000 // v5 renamed cacheTime to gcTime
   });
 
   // Store previous value for change calculation
