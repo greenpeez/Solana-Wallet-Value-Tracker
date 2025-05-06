@@ -61,19 +61,16 @@ export default function TokenValueTracker({ walletAddress, tokenAddress }: Token
     handleRefresh();
   }, [handleRefresh]);
 
-  // Calculate value change direction and percentage
-  const getValueChangeInfo = () => {
-    if (!tokenData?.usdValue || !previousValue || previousValue === 0) {
-      return { direction: 'neutral', percentage: 0 };
-    }
-    
-    const direction = tokenData.usdValue > previousValue ? 'up' : 'down';
-    const percentage = ((tokenData.usdValue - previousValue) / previousValue) * 100;
-    
-    return { direction, percentage };
-  };
+  // Calculate value change direction and percentage using useEffect to track changes
+  const [valueChange, setValueChange] = useState({ direction: 'neutral', percentage: 0 });
 
-  const valueChange = getValueChangeInfo();
+  useEffect(() => {
+    if (tokenData?.usdValue && previousValue && previousValue !== 0) {
+      const direction = tokenData.usdValue > previousValue ? 'up' : 'down';
+      const percentage = ((tokenData.usdValue - previousValue) / previousValue) * 100;
+      setValueChange({ direction, percentage });
+    }
+  }, [tokenData?.usdValue, previousValue]);
 
   return (
     <div className="flex flex-col space-y-6 p-4 rounded-lg shadow-sm w-full max-w-sm">
