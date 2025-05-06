@@ -88,9 +88,10 @@ export async function getTokenBalance(walletAddress: string, tokenAddress: strin
       console.error('Error with Solscan API, falling back to RPC:', solscanError);
     }
     
-    // Fallback to using the QuickNode RPC endpoint
+    // Fallback to using the QuickNode RPC endpoint (with cache-busting query parameter)
+    const timestamp = Date.now();
     console.log('Trying RPC endpoint: https://green-restless-silence.solana-mainnet.quiknode.pro/b8ff0d28d7f30e4190568de541e32f6a607f4680/');
-    const rpcEndpoint = "https://green-restless-silence.solana-mainnet.quiknode.pro/b8ff0d28d7f30e4190568de541e32f6a607f4680/";
+    const rpcEndpoint = `https://green-restless-silence.solana-mainnet.quiknode.pro/b8ff0d28d7f30e4190568de541e32f6a607f4680/?t=${timestamp}`;
     
     // For the BANI token
     if (walletAddress === "H8r7GkQktUQNdA98tpVHuE3VupjTKpjTGpQsPRHsd9zE" &&
@@ -143,10 +144,13 @@ export async function getTokenBalance(walletAddress: string, tokenAddress: strin
  */
 export async function getTokenMetadata(tokenAddress: string): Promise<TokenMetadata> {
   try {
+    // Add cache-busting query parameter
+    const timestamp = Date.now();
+    
     // For the specific token we're tracking (BANI)
     if (tokenAddress === "2LmeQwAKJPcyUeQKS7CzNMRGyoQt1FsZbUrHCQBdbonk") {
-      // Make the API request
-      const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}`);
+      // Make the API request with cache-busting
+      const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}?t=${timestamp}`);
       
       if (!response.ok) {
         throw new Error(`DexScreener API error: ${response.statusText}`);
@@ -165,36 +169,30 @@ export async function getTokenMetadata(tokenAddress: string): Promise<TokenMetad
         };
       }
       
-      // Fallback to verified data if the API doesn't return pairs
-      return {
-        price: 0.00003095, // Verified price from DexScreener
-        name: "BONK SPIRIT ANIMAL",
-        symbol: "BANI"
-      };
+      // If no pairs, try an alternative API (Jupiter Aggregator price API)
+      console.log('No pairs found in DexScreener, trying alternative API');
+      const jupiterResponse = await fetch(`https://price.jup.ag/v4/price?ids=${tokenAddress}&t=${timestamp}`);
+      
+      if (jupiterResponse.ok) {
+        const jupiterData = await jupiterResponse.json();
+        if (jupiterData.data && jupiterData.data[tokenAddress]) {
+          const price = jupiterData.data[tokenAddress].price;
+          return {
+            price,
+            name: "BONK SPIRIT ANIMAL",
+            symbol: "BANI"
+          };
+        }
+      }
+      
+      // If we couldn't get data from either source, throw error to prevent using stale data
+      throw new Error('Could not retrieve price data from any source');
     }
     
     // For any other token (should not be reached in this app)
-    return {
-      price: 0,
-      name: "Unknown Token",
-      symbol: "UNKNOWN"
-    };
+    throw new Error('Unsupported token');
   } catch (error) {
     console.error('Error fetching token price:', error);
-    
-    // Return verified data for the specific token
-    if (tokenAddress === "2LmeQwAKJPcyUeQKS7CzNMRGyoQt1FsZbUrHCQBdbonk") {
-      return {
-        price: 0.00003095, // Verified price from DexScreener
-        name: "BONK SPIRIT ANIMAL",
-        symbol: "BANI"
-      };
-    }
-    
-    return {
-      price: 0,
-      name: "Unknown Token",
-      symbol: "UNKNOWN"
-    };
+    throw error; // Re-throw to prevent using fallback data
   }
 }
