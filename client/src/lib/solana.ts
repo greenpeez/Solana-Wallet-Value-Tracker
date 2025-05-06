@@ -1,6 +1,10 @@
 
+import { Buffer } from 'buffer';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID, getAccount } from '@solana/spl-token';
+
+// Polyfill Buffer for browser
+window.Buffer = Buffer;
 
 // Define interfaces
 interface TokenMetadata {
@@ -18,7 +22,7 @@ interface TokenAccountInfo {
 }
 
 // Initialize Solana connection (using public RPC endpoint)
-const connection = new Connection('https://api.mainnet-beta.solana.com');
+const connection = new Connection('https://api.devnet.solana.com');
 
 // Get token account for a specific wallet and token
 async function getTokenAccount(walletAddress: string, tokenMint: string) {
