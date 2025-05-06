@@ -77,18 +77,18 @@ export default function useTokenValue(walletAddress: string, tokenAddress: strin
     gcTime: 5 * 1000 // v5 renamed cacheTime to gcTime
   });
 
-  // Store previous value for change calculation
+  // Store previous values for change calculation
   useEffect(() => {
-    if (tokenData?.usdValue) {
+    if (tokenData?.usdValue && tokenData?.balance) {
       if (previousValue === 0) {
         // Initial value
         setPreviousValue(tokenData.usdValue);
       } else if (tokenData.usdValue !== previousValue) {
-        // Update when either price or balance changes affect total value
+        // Update only when actual value changes (price * balance)
         setPreviousValue(tokenData.usdValue);
       }
     }
-  }, [tokenData?.balance, tokenData?.price]);
+  }, [tokenData?.balance, tokenData?.price, previousValue]);
 
   return {
     tokenData,
