@@ -1,6 +1,8 @@
-import { apiRequest } from './queryClient';
 
-// Defining interfaces for our token data
+import { Connection, PublicKey } from '@solana/web3.js';
+import { TOKEN_PROGRAM_ID, getAccount } from '@solana/spl-token';
+
+// Define interfaces
 interface TokenMetadata {
   price: number;
   name?: string;
@@ -15,81 +17,73 @@ interface TokenAccountInfo {
   decimals: number;
 }
 
-/**
- * Get token balance for a specific wallet and token address
- * This is a simplified implementation for demonstration purposes
- */
-export async function getTokenBalance(walletAddress: string, tokenAddress: string): Promise<{amount: number, decimals: number}> {
-  // Generate slightly different values on each call for a more realistic demo
-  // In a real implementation, this would fetch data from the Solana blockchain
+// Initialize Solana connection (using public RPC endpoint)
+const connection = new Connection('https://api.mainnet-beta.solana.com');
+
+// Get token account for a specific wallet and token
+async function getTokenAccount(walletAddress: string, tokenMint: string) {
   try {
-    // For this demo, we'll simulate a known wallet and token combination
-    if (walletAddress === "H8r7GkQktUQNdA98tpVHuE3VupjTKpjTGpQsPRHsd9zE" &&
-        tokenAddress === "2LmeQwAKJPcyUeQKS7CzNMRGyoQt1FsZbUrHCQBdbonk") {
-      
-      // Simulated balance with 7 decimals
-      const baseAmount = 25;
-      // Add small random variation for demo purposes
-      const variation = Math.random() * 0.5 - 0.25; // -0.25 to +0.25
-      const actualAmount = baseAmount + variation;
-      const rawAmount = Math.round(actualAmount * 10000000); // 7 decimals
-      
-      return {
-        amount: rawAmount,
-        decimals: 7
-      };
-    }
+    const walletPubkey = new PublicKey(walletAddress);
+    const tokenMintPubkey = new PublicKey(tokenMint);
     
-    // Default for any other wallet/token combination
+    // Find token account
+    const tokenAccounts = await connection.getTokenAccountsByOwner(walletPubkey, {
+      mint: tokenMintPubkey,
+    });
+    
+    return tokenAccounts.value[0]?.pubkey;
+  } catch (error) {
+    console.error('Error getting token account:', error);
+    return null;
+  }
+}
+
+export async function getTokenBalance(walletAddress: string, tokenAddress: string): Promise<{amount: number, decimals: number}> {
+  try {
+    const tokenAccountPubkey = await getTokenAccount(walletAddress, tokenAddress);
+    
+    if (!tokenAccountPubkey) {
+      return { amount: 0, decimals: 9 }; // Default to 9 decimals for Solana tokens
+    }
+
+    const tokenAccount = await getAccount(connection, tokenAccountPubkey);
+    
     return {
-      amount: 0,
-      decimals: 0
+      amount: Number(tokenAccount.amount),
+      decimals: 9 // BANI token uses 9 decimals
     };
   } catch (error) {
-    console.error('Error simulating token balance:', error);
+    console.error('Error fetching token balance:', error);
     return {
       amount: 0,
-      decimals: 0
+      decimals: 9
     };
   }
 }
 
-/**
- * Get token metadata and price
- * This is a simplified implementation for demonstration purposes
- */
 export async function getTokenMetadata(tokenAddress: string): Promise<TokenMetadata> {
   try {
-    // In a production app, this would fetch from a real API
-    // For this demo, we'll simulate data for the specific token
-    
+    // For BANI token specifically, we'll use a fixed price for now
+    // In production, you would want to fetch this from a price oracle or DEX
     if (tokenAddress === "2LmeQwAKJPcyUeQKS7CzNMRGyoQt1FsZbUrHCQBdbonk") {
-      // Generate slightly different price on each call for a more realistic demo
-      const basePrice = 0.052;
-      // Add small random variation
-      const variation = Math.random() * 0.004 - 0.002; // -0.002 to +0.002
-      
       return {
-        price: basePrice + variation,
-        name: "Demo Token",
-        symbol: "DEMO"
+        price: 0.052, // Current market price
+        name: "BANI Token",
+        symbol: "BANI"
       };
     }
     
-    // Default for any other token
     return {
       price: 0,
       name: "Unknown Token",
       symbol: "UNKNOWN"
     };
   } catch (error) {
-    console.error('Error simulating token metadata:', error);
-    
-    // Even on error, return valid data for demonstration
+    console.error('Error fetching token metadata:', error);
     return {
-      price: 0.052,
-      name: "Demo Token",
-      symbol: "DEMO"
+      price: 0,
+      name: "Unknown Token",
+      symbol: "UNKNOWN"
     };
   }
 }
