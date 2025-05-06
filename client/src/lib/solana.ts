@@ -62,12 +62,11 @@ export async function getTokenBalance(walletAddress: string, tokenAddress: strin
       // Use the known token account address
       const tokenAccountAddress = "GC6XPwiSa8zCRtUf8XXVjnJPB5mnJyo6FA9EanD8t4Jk";
       
-      // Prepare RPC request to get token account info using proper headers
+      // Prepare RPC request to get token account info
       const response = await fetch(rpcEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
         },
         body: JSON.stringify({
           jsonrpc: '2.0',
