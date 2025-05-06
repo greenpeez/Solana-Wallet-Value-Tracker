@@ -23,7 +23,7 @@ export default function useTokenValue(walletAddress: string, tokenAddress: strin
       try {
         console.log(`Fetching token value, attempt ${fetchCount + 1}`);
         // Increment fetch count
-        setFetchCount(prev => prev + 1);
+        setFetchCount((prev: number) => prev + 1);
         
         // For BANI token in the specified wallet, we'll use accurate values
         if (walletAddress === "H8r7GkQktUQNdA98tpVHuE3VupjTKpjTGpQsPRHsd9zE" &&
