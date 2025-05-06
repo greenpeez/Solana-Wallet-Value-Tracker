@@ -105,7 +105,7 @@ export default function useTokenValue(walletAddress: string, tokenAddress: strin
       // Update 24-hour reference point after initial period
       else if (dayStartData && 
           tokenData.timestamp && dayStartData.timestamp && 
-          tokenData.timestamp - dayStartData.timestamp >= 24 * 60 * 60 * 1000
+          tokenData.timestamp - dayStartData.timestamp >= 6 * 60 * 60 * 1000
       ) {
         setDayStartData(tokenData);
       }
