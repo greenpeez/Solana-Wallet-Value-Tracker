@@ -66,11 +66,16 @@ export default function TokenValueTracker({ walletAddress, tokenAddress }: Token
 
   useEffect(() => {
     if (tokenData?.usdValue && previousValue && previousValue !== 0) {
-      const direction = tokenData.usdValue > previousValue ? 'up' : 'down';
-      const percentage = ((tokenData.usdValue - previousValue) / previousValue) * 100;
+      // Calculate total value change based on both price and balance changes
+      const direction = tokenData.usdValue > previousValue ? 'up' : 
+                       tokenData.usdValue < previousValue ? 'down' : 'neutral';
+      const percentage = direction !== 'neutral' 
+        ? ((tokenData.usdValue - previousValue) / previousValue) * 100
+        : 0;
+      
       setValueChange({ direction, percentage });
     }
-  }, [tokenData?.usdValue, previousValue]);
+  }, [tokenData?.usdValue, tokenData?.balance, tokenData?.price, previousValue]);
 
   return (
     <div className="flex flex-col space-y-6 p-4 rounded-lg shadow-sm w-full max-w-sm">
