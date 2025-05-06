@@ -93,32 +93,14 @@ export default function useTokenValue(walletAddress: string, tokenAddress: strin
         setPreviousData(tokenData);
       }
 
-      // Set initial reference point based on historical balance
+      // Set initial reference point to $0
       if (!initialDataSet) {
-        const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
-        getTokenBalance(walletAddress, tokenAddress)
-          .then(({ amount, decimals }) => {
-            const historicalBalance = amount / Math.pow(10, decimals);
-            const historicalValue = historicalBalance * tokenData.price;
-            
-            setDayStartData({
-              ...tokenData,
-              balance: historicalBalance,
-              usdValue: historicalValue,
-              timestamp: oneDayAgo
-            });
-          })
-          .catch(() => {
-            // If historical data lookup fails, default to $0
-            setDayStartData({
-              ...tokenData,
-              usdValue: 0,
-              timestamp: oneDayAgo
-            });
-          })
-          .finally(() => {
-            setInitialDataSet(true);
-          });
+        setDayStartData({
+          ...tokenData,
+          usdValue: 0,
+          timestamp: Date.now() - (24 * 60 * 60 * 1000) // 24 hours ago
+        });
+        setInitialDataSet(true);
       }
       // Update 24-hour reference point after initial period
       else if (dayStartData && 
