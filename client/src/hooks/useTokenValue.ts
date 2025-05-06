@@ -24,25 +24,39 @@ export default function useTokenValue(walletAddress: string, tokenAddress: strin
         if (walletAddress === "H8r7GkQktUQNdA98tpVHuE3VupjTKpjTGpQsPRHsd9zE" &&
             tokenAddress === "2LmeQwAKJPcyUeQKS7CzNMRGyoQt1FsZbUrHCQBdbonk") {
           
-          // Get token balance and metadata in parallel for efficiency
-          const [balanceResult, priceResult] = await Promise.all([
-            getTokenBalance(walletAddress, tokenAddress),
-            getTokenMetadata(tokenAddress)
-          ]);
+          let balance;
+          let decimals = 6;
+          let price;
           
-          // Extract data
-          const { amount, decimals } = balanceResult;
-          const { price } = priceResult;
-          
-          // Convert raw amount to actual token amount based on decimals
-          const actualAmount = amount / Math.pow(10, decimals);
+          // First try to get the balance using QuickNode RPC
+          try {
+            // Get token balance and metadata in parallel for efficiency
+            const [balanceResult, priceResult] = await Promise.all([
+              getTokenBalance(walletAddress, tokenAddress),
+              getTokenMetadata(tokenAddress)
+            ]);
+            
+            // Extract data
+            const { amount, decimals: resultDecimals } = balanceResult;
+            decimals = resultDecimals;
+            const { price: resultPrice } = priceResult;
+            
+            // Convert raw amount to actual token amount based on decimals
+            balance = amount / Math.pow(10, decimals);
+            price = resultPrice;
+          } catch (apiError) {
+            console.error("API Error, using fallback methods:", apiError);
+            
+            // If all API methods fail, throw error to prevent using hardcoded data
+            throw apiError;
+          }
           
           // Calculate USD value
-          const usdValue = actualAmount * price;
+          const usdValue = balance * price;
           
           return {
             usdValue,
-            balance: actualAmount,
+            balance,
             price
           };
         }
@@ -51,31 +65,13 @@ export default function useTokenValue(walletAddress: string, tokenAddress: strin
         return null;
       } catch (error) {
         console.error("Error fetching token value:", error);
-        
-        // For the specific token we're tracking, ensure we always return real data
-        // even if there's an API error
-        if (walletAddress === "H8r7GkQktUQNdA98tpVHuE3VupjTKpjTGpQsPRHsd9zE" &&
-            tokenAddress === "2LmeQwAKJPcyUeQKS7CzNMRGyoQt1FsZbUrHCQBdbonk") {
-          
-          // These values are from our API checks and match the expected values
-          const actualAmount = 31.2477920; // 312477920 / 10^7
-          const price = 0.00003095;
-          const usdValue = actualAmount * price;
-          
-          return {
-            usdValue,
-            balance: actualAmount,
-            price
-          };
-        }
-        
-        return null;
+        throw error; // Re-throw to prevent fallback data
       }
     },
-    refetchOnWindowFocus: false,
-    refetchInterval: false,
-    staleTime: 60 * 1000, // 1 minute
-    retry: 2,
+    refetchOnWindowFocus: true,
+    refetchInterval: 60 * 1000, // 1 minute auto-refresh
+    staleTime: 30 * 1000, // 30 seconds
+    retry: 3,
     retryDelay: 1000
   });
 
