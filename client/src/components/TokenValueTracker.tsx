@@ -20,13 +20,29 @@ export default function TokenValueTracker({ walletAddress, tokenAddress }: Token
     isLoading, 
     isError, 
     refetch,
-    previousValue
+    previousData
   } = useTokenValue(walletAddress, tokenAddress);
 
   const handleRefresh = useCallback(() => {
     refetch();
     setLastUpdated(new Date());
   }, [refetch]);
+
+  // Calculate percentage change considering both price and balance
+  const calculatePercentageChange = useCallback(() => {
+    if (!tokenData || !previousData) return { direction: 'neutral', percentage: 0 };
+    
+    const currentValue = tokenData.usdValue;
+    const previousValue = previousData.usdValue;
+    
+    if (previousValue === 0) return { direction: 'neutral', percentage: 0 };
+    
+    const direction = currentValue > previousValue ? 'up' : 
+                     currentValue < previousValue ? 'down' : 'neutral';
+    const percentage = ((currentValue - previousValue) / previousValue) * 100;
+    
+    return { direction, percentage };
+  }, [tokenData, previousData]);
 
   // Format the last updated time
   const getLastUpdatedText = useCallback(() => {
@@ -65,12 +81,9 @@ export default function TokenValueTracker({ walletAddress, tokenAddress }: Token
   const [valueChange, setValueChange] = useState({ direction: 'neutral', percentage: 0 });
 
   useEffect(() => {
-    if (tokenData?.usdValue && previousValue && previousValue !== 0) {
-      const direction = tokenData.usdValue > previousValue ? 'up' : 'down';
-      const percentage = ((tokenData.usdValue - previousValue) / previousValue) * 100;
-      setValueChange({ direction, percentage });
-    }
-  }, [tokenData?.usdValue, previousValue]);
+    const newValueChange = calculatePercentageChange();
+    setValueChange(newValueChange);
+  }, [calculatePercentageChange]);
 
   return (
     <div className="flex flex-col space-y-6 p-4 rounded-lg shadow-sm w-full max-w-sm">

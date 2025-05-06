@@ -9,7 +9,11 @@ interface TokenData {
 }
 
 export default function useTokenValue(walletAddress: string, tokenAddress: string) {
-  const [previousValue, setPreviousValue] = useState<number>(0);
+  const [previousData, setPreviousData] = useState<{
+    usdValue: number;
+    balance: number;
+    price: number;
+  } | null>(null);
 
   const {
     data: tokenData,
@@ -77,24 +81,28 @@ export default function useTokenValue(walletAddress: string, tokenAddress: strin
     gcTime: 5 * 1000 // v5 renamed cacheTime to gcTime
   });
 
-  // Store previous value for change calculation
+  // Store previous data for change calculation
   useEffect(() => {
-    if (tokenData?.usdValue) {
-      if (previousValue === 0) {
-        // Initial value - set to slightly different value for demonstration
-        setPreviousValue(tokenData.usdValue * 0.99);
-      } else if (tokenData.usdValue !== previousValue) {
-        // Update for subsequent refreshes
-        setPreviousValue(tokenData.usdValue);
+    if (tokenData) {
+      if (!previousData) {
+        // Initial values
+        setPreviousData(tokenData);
+      } else if (
+        tokenData.usdValue !== previousData.usdValue ||
+        tokenData.balance !== previousData.balance ||
+        tokenData.price !== previousData.price
+      ) {
+        // Update when any value changes
+        setPreviousData(tokenData);
       }
     }
-  }, [tokenData?.usdValue, previousValue]);
+  }, [tokenData]);
 
   return {
     tokenData,
     isLoading,
     isError,
     refetch,
-    previousValue
+    previousData
   };
 }
