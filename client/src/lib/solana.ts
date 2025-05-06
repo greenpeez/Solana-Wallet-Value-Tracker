@@ -51,8 +51,8 @@ const KNOWN_TOKEN_ACCOUNTS = {
  */
 export async function getTokenBalance(walletAddress: string, tokenAddress: string): Promise<{amount: number, decimals: number}> {
   try {
-    // Using public RPC endpoint for Solana
-    const rpcEndpoint = "https://api.mainnet-beta.solana.com";
+    // Using configured RPC endpoint
+    const rpcEndpoint = import.meta.env.VITE_SOLANA_RPC_URL || "https://api.mainnet-beta.solana.com";
     
     // For the BANI token, we need to find the token account address
     // To do this, we'll use the known token account from Solscan
