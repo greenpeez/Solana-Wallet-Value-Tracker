@@ -27,17 +27,7 @@ export function formatNumber(value: number): string {
  * Format token price (often very small numbers)
  */
 export function formatTokenPrice(value: number): string {
-  // For tiny values, we need more precision
-  if (value < 0.0001) {
-    return new Intl.NumberFormat('en-US', { 
-      style: 'currency', 
-      currency: 'USD',
-      minimumFractionDigits: 8,
-      maximumFractionDigits: 8
-    }).format(value);
-  }
-  
-  // For regular values
+  // Always use 6 decimal places for consistency
   return new Intl.NumberFormat('en-US', { 
     style: 'currency', 
     currency: 'USD',
