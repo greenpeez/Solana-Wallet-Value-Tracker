@@ -124,7 +124,7 @@ export default function TokenValueTracker({ walletAddress, tokenAddress }: Token
               <span className="text-3xl font-bold text-black">
                 {formatCurrency(tokenData.usdValue)}
               </span>
-              <span className={`ml-2 text-sm font-medium ${valueChange.direction === 'up' ? 'text-green-500' : valueChange.direction === 'down' ? 'text-red-500' : 'text-gray-500'} flex items-center`}>
+              <span className={`ml-2 text-sm font-medium ${valueChange.direction === 'up' ? 'text-green-500' : 'text-black'} flex items-center`}>
                 {valueChange.direction !== 'neutral' && (
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
