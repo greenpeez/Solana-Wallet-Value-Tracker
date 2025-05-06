@@ -126,20 +126,18 @@ export default function TokenValueTracker({ walletAddress, tokenAddress }: Token
                 {formatCurrency(tokenData.usdValue)}
               </span>
               <span className={`ml-2 text-sm font-medium ${valueChange.direction === 'up' ? 'text-green-500' : 'text-black'} flex items-center`}>
-                {valueChange.direction !== 'neutral' && (
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    className={`h-4 w-4 mr-1 ${valueChange.direction === 'up' ? '' : 'rotate-180'}`}
-                  >
-                    <polyline points="18 15 12 9 6 15"></polyline>
-                  </svg>
-                )}
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  className={`h-4 w-4 mr-1 ${valueChange.direction === 'up' ? '' : 'rotate-180'}`}
+                >
+                  <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
                 <span>{valueChange.percentage.toFixed(2)}%</span>
               </span>
             </div>
