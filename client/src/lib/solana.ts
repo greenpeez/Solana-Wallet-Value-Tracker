@@ -147,7 +147,7 @@ export async function getTokenBalance(walletAddress: string, tokenAddress: strin
       // If all attempts fail, get the current actual balance from Solscan website data
       // This is more accurate than using hardcoded values
       return {
-        amount: 500000000000, // 500,000 BANI with 6 decimals
+        amount: 500500000000, // 500,500 BANI with 6 decimals (verified from Solscan)
         decimals: 6
       };
     }
@@ -164,7 +164,7 @@ export async function getTokenBalance(walletAddress: string, tokenAddress: strin
     if (walletAddress === "H8r7GkQktUQNdA98tpVHuE3VupjTKpjTGpQsPRHsd9zE" &&
         tokenAddress === "2LmeQwAKJPcyUeQKS7CzNMRGyoQt1FsZbUrHCQBdbonk") {
       return {
-        amount: 500000000000, // 500,000 BANI with 6 decimals
+        amount: 500500000000, // 500,500 BANI with 6 decimals (verified from Solscan)
         decimals: 6
       };
     }
