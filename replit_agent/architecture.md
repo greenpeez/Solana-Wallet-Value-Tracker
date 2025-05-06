@@ -2,157 +2,190 @@
 
 ## 1. Overview
 
-The Solana Token Value Tracker is a web application that allows users to monitor the real-time USD value of specific Solana tokens in a wallet. The system is built using a modern React frontend with a lightweight Express backend, focusing primarily on client-side interactions with the Solana blockchain and external price APIs.
+This application is a Solana Token Value Tracker that allows users to monitor the real-time USD value of specified tokens in Solana wallets. The application follows a modern full-stack architecture with a clear separation between client and server components.
 
-The application follows a client-focused architecture where most of the business logic related to token tracking happens in the browser, while the backend primarily serves the frontend assets and provides minimal API functionality.
+The system is built as a single codebase with separate directories for client (frontend) and server (backend) code, using a shared schema definition for database models and types. It employs a React frontend with a Node.js/Express backend, PostgreSQL database with Drizzle ORM, and integrates with the Solana blockchain.
 
 ## 2. System Architecture
 
 ### High-Level Architecture
 
-The application follows a standard web architecture with the following components:
-
-1. **Frontend**: React-based single-page application (SPA) using Vite as the build tool
-2. **Backend**: Lightweight Express.js server that serves the SPA and provides basic API functionality
-3. **Database**: Schema defined using Drizzle ORM, though minimal database usage is currently implemented
-4. **External Services**: Integration with Solana blockchain and Solscan API for token data
+The application follows a client-server architecture with the following components:
 
 ```
-Client (Browser) <---> Express Server <---> External APIs (Solscan)
-                          |
-                          v
-                       Database
-                      (Optional)
+┌─────────────┐       ┌─────────────┐       ┌─────────────┐       ┌─────────────┐
+│             │       │             │       │             │       │             │
+│  React UI   │◄─────►│  Express    │◄─────►│ PostgreSQL  │       │   Solana    │
+│  (Client)   │       │  (Server)   │       │ (Database)  │       │ Blockchain  │
+│             │       │             │       │             │       │             │
+└─────────────┘       └─────────────┘       └─────────────┘       └─────────────┘
+                                                                       ▲
+                                                                       │
+                      ┌─────────────────────────────────────────────────┘
+                      │
+                      │
+                ┌─────────────┐
+                │             │
+                │  External   │
+                │  APIs       │
+                │             │
+                └─────────────┘
 ```
 
-### Technology Stack
+### Frontend Architecture
 
-- **Frontend**:
-  - React (with hooks pattern)
-  - TanStack Query (React Query) for data fetching
-  - Tailwind CSS with shadcn/ui components
-  - TypeScript for type safety
-  
-- **Backend**:
-  - Express.js for API server
-  - TypeScript for type safety
-  
-- **Database**:
-  - Drizzle ORM for database schema management
-  - PostgreSQL (via Neon Database's serverless offering)
-  
-- **Build/Development**:
-  - Vite for frontend bundling and development
-  - ESBuild for backend bundling
-  - TypeScript for static typing across the codebase
+The frontend is built with React and follows a component-based architecture using modern React practices:
+
+- Uses functional components with hooks
+- Employs a UI component library based on Radix UI primitives with shadcn/ui styling
+- Uses Tailwind CSS for styling
+- React Query for data fetching and caching
+- Uses a client-side routing solution (wouter)
+
+### Backend Architecture
+
+The backend is a Node.js application with Express framework:
+
+- RESTful API structure with Express
+- PostgreSQL database accessed via Drizzle ORM
+- Serverless-compatible database connection using Neon database
+- TypeScript for type safety across the stack
+
+### Data Layer
+
+- PostgreSQL database managed through Drizzle ORM
+- Shared schema definitions between frontend and backend
+- Database migrations handled by Drizzle Kit
 
 ## 3. Key Components
 
 ### Frontend Components
 
-1. **Main Application (App.tsx)**
-   - Provides routing using Wouter
-   - Sets up global providers (QueryClientProvider, TooltipProvider)
+1. **UI Component Library**
+   - Built on Radix UI primitives with custom styling
+   - Provides consistent design patterns across the application
+   - Includes complex components like cards, toasts, modals, and form elements
 
-2. **TokenValueTracker**
-   - Core component handling the display of token values
-   - Manages refresh intervals and update states
-   - Displays token balance and USD value
+2. **Token Value Tracker Component**
+   - Core feature component that displays token values and refreshes data
+   - Shows token balances, USD values, and historical data
 
-3. **UI Component Library**
-   - Based on shadcn/ui with Radix UI primitives
-   - Comprehensive set of accessible, styled components
-   - Custom theming with orange-based color scheme
+3. **Data Fetching Layer**
+   - Uses React Query for data fetching and state management
+   - Custom hooks for fetching token data from Solana and price data from external sources
 
 ### Backend Components
 
-1. **Express Server (server/index.ts)**
-   - Serves the compiled frontend application
-   - Provides logging middleware for API requests
-   - Handles error responses
+1. **Express Server**
+   - Serves the frontend application
+   - Provides API endpoints for data access and operations
+   - Handles logging and error reporting
 
-2. **Storage Layer (server/storage.ts)**
-   - Abstract interface for data storage
-   - MemStorage implementation for in-memory storage
-   - Support for basic user operations (though not currently utilized heavily)
+2. **Database Layer**
+   - Drizzle ORM for database operations
+   - Schema definitions for users, tokens, wallets, and historical data
+   - Connection pooling for database access
 
-### Data Schema
-
-```typescript
-// User schema from shared/schema.ts
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
-});
-```
+3. **Solana Integration**
+   - Integration with Solana blockchain for token data
+   - Uses @solana/web3.js and @solana/spl-token libraries
 
 ## 4. Data Flow
 
-### Token Value Tracking Flow
+1. **Frontend to Backend**
+   - React components request data via custom hooks
+   - Hooks use React Query to fetch from API endpoints
+   - API responses are cached and managed for performance
 
-1. User accesses the application and views the TokenValueTracker component
-2. The component uses the `useTokenValue` hook to fetch token data
-3. The hook makes two major API calls:
-   - Fetches token balance from Solana blockchain
-   - Retrieves token price data from external APIs
-4. The component displays the token balance, price, and calculated USD value
-5. An auto-refresh mechanism periodically updates the data
+2. **Backend to Database**
+   - Express routes handle API requests
+   - Database operations executed through Drizzle ORM
+   - Results returned as JSON responses
 
-### Data Fetching Strategy
-
-- React Query is used for data fetching, caching, and synchronization
-- Custom hooks encapsulate the data fetching logic
-- The application uses optimistic UI updates when data changes
+3. **Blockchain Integration**
+   - Direct integration with Solana blockchain from the frontend
+   - Token balances and prices fetched from blockchain and external APIs
+   - Historical data stored in the database for tracking changes over time
 
 ## 5. External Dependencies
 
-### Solana Blockchain Integration
-
-- `@solana/web3.js` for Solana blockchain interactions
-- `@solana/spl-token` for SPL token interactions
-- Custom utility functions in `lib/solana.ts` abstract the blockchain interactions
-
-### External APIs
-
-- Solscan API for token metadata and pricing
-  - API key stored in environment variables
-  - Endpoints for token metadata, pricing, and transaction history
-
-### UI Component Libraries
-
-- Radix UI primitives for accessible component foundations
-- shadcn/ui for styled components on top of Radix
+### Frontend Dependencies
+- React ecosystem (React, React DOM)
+- React Query for data fetching
+- Radix UI primitives for accessible UI components
 - Tailwind CSS for styling
+- Solana Web3 libraries for blockchain integration
+
+### Backend Dependencies
+- Express.js for the web server
+- Drizzle ORM for database operations
+- Neon serverless PostgreSQL client
+- TypeScript for type safety
+
+### External Services
+- Solana blockchain (via web3.js)
+- Price data APIs (integrated directly from frontend)
+- Neon PostgreSQL for database storage
 
 ## 6. Deployment Strategy
 
-The application is configured for deployment on Replit with the following setup:
+The application is designed to be deployable on various platforms with a focus on cloud environments:
 
-1. **Development Mode**:
-   - `npm run dev` starts both frontend and backend in development mode
-   - Vite provides hot module replacement for frontend
-   - Environment variables loaded from `.env` file
+- **Development**: Local development server with hot reloading
+- **Production**: Built static assets served by Express
+- **Database**: Neon serverless PostgreSQL
+- **Configuration**: Environment variables for configuration management
 
-2. **Production Build**:
-   - Frontend built with Vite (`vite build`)
-   - Backend bundled with ESBuild into the dist directory
-   - Static assets served from the dist/public directory
+The repository includes Replit configuration for easy development and deployment in the Replit environment.
 
-3. **Deployment Configuration**:
-   - `.replit` file defines the deployment configuration
-   - Uses autoscaling deployment strategy
-   - Exposes port 5000 externally on port 80
+### Build Process
 
-4. **Database Provisioning**:
-   - Database connection configured via `DATABASE_URL` environment variable
-   - Drizzle ORM used for schema management
-   - Migration scripts available via `npm run db:push`
+1. Frontend built with Vite
+2. Backend compiled with esbuild
+3. Combined deployment with static assets served by Express
 
-### Environment Configuration
+### Deployment Commands
 
-The application requires the following environment variables:
+- `npm run dev`: Start development server
+- `npm run build`: Build for production
+- `npm run start`: Start production server
 
-- `DATABASE_URL`: Connection string for PostgreSQL database
-- `VITE_SOLSCAN_API_KEY`: API key for Solscan API
-- `NODE_ENV`: Environment setting (development/production)
+## 7. Schema Design
+
+The database schema includes the following tables:
+
+1. **users**: Authentication and account management
+   - id (PK)
+   - username (unique)
+   - password
+
+2. **tokens**: Metadata for tracked tokens
+   - id (PK)
+   - address (unique)
+   - name
+   - symbol
+   - decimals
+   - currentPrice
+   - lastUpdated
+
+3. **wallets**: Information about tracked wallets
+   - id (PK)
+   - address (unique)
+   - label
+   - lastUpdated
+
+4. **tokenPriceHistory**: Historical price data
+   - id (PK)
+   - tokenAddress
+   - price
+   - timestamp
+
+5. **tokenBalanceHistory**: Historical balance data
+   - id (PK)
+   - walletAddress
+   - tokenAddress
+   - balance
+   - usdValue
+   - timestamp
+
+This schema is designed to track token values over time, supporting the primary use case of monitoring token values in specified wallets.

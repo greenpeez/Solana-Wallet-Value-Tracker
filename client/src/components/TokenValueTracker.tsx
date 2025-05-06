@@ -115,7 +115,7 @@ export default function TokenValueTracker({ walletAddress, tokenAddress }: Token
                 {formatCurrency(tokenData.usdValue)}
               </span>
               {valueChange.direction !== 'neutral' && (
-                <span className={`ml-2 text-sm font-medium ${valueChange.direction === 'up' ? 'text-green-500' : 'text-red-500'} flex items-center`}>
+                <span className={`ml-2 text-sm font-medium ${valueChange.direction === 'up' ? 'text-green-500' : 'text-gray-800'} flex items-center`}>
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
                     viewBox="0 0 24 24" 
@@ -132,15 +132,7 @@ export default function TokenValueTracker({ walletAddress, tokenAddress }: Token
                 </span>
               )}
             </div>
-            <p className="text-gray-500 text-xs mt-2">
-              Last updated: <span>{getLastUpdatedText()}</span>
-              <button 
-                onClick={handleRefresh}
-                className="ml-2 focus:outline-none text-primary" 
-              >
-                <RefreshCw className={`inline h-3 w-3 ${isLoading ? 'animate-spin' : ''}`} />
-              </button>
-            </p>
+
           </div>
         )}
       </div>
