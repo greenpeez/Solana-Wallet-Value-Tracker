@@ -2,8 +2,14 @@
 import { Connection, PublicKey } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID, getAccount } from '@solana/spl-token';
 
-// Use a more reliable RPC endpoint
-const SOLANA_RPC_URL = 'https://solana-mainnet.g.alchemy.com/v2/demo';
+// Use public Solana RPC endpoint
+const SOLANA_RPC_URL = 'https://api.mainnet-beta.solana.com';
+
+// Browser-compatible Buffer
+import { Buffer } from 'buffer/';
+if (typeof window !== 'undefined') {
+  window.Buffer = Buffer;
+}
 
 // Define interfaces
 interface TokenMetadata {
