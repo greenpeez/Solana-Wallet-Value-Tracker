@@ -81,14 +81,14 @@ export default function useTokenValue(walletAddress: string, tokenAddress: strin
   useEffect(() => {
     if (tokenData?.usdValue) {
       if (previousValue === 0) {
-        // Initial value - set to slightly different value for demonstration
-        setPreviousValue(tokenData.usdValue * 0.99);
+        // Initial value
+        setPreviousValue(tokenData.usdValue);
       } else if (tokenData.usdValue !== previousValue) {
-        // Update for subsequent refreshes
+        // Update when either price or balance changes affect total value
         setPreviousValue(tokenData.usdValue);
       }
     }
-  }, [tokenData?.usdValue, previousValue]);
+  }, [tokenData?.balance, tokenData?.price]);
 
   return {
     tokenData,
