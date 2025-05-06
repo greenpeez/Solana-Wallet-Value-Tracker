@@ -81,7 +81,7 @@ export default function TokenValueTracker({ walletAddress, tokenAddress }: Token
       <div className="flex justify-end mb-2">
         <div className="flex items-center">
           <span className="h-2 w-2 rounded-full bg-green-400 mr-2 animate-pulse"></span>
-          <span className="text-xs text-primary">Live Data</span>
+          <span className="text-xs text-black">Live Data</span>
         </div>
       </div>
 
@@ -90,8 +90,8 @@ export default function TokenValueTracker({ walletAddress, tokenAddress }: Token
         {/* Loading State - only show on initial load */}
         {isLoading && !tokenData && (
           <div>
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-2"></div>
-            <p className="text-sm text-primary">Fetching latest value...</p>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-black mb-2"></div>
+            <p className="text-sm text-black">Fetching latest value...</p>
           </div>
         )}
 
@@ -109,9 +109,9 @@ export default function TokenValueTracker({ walletAddress, tokenAddress }: Token
         {/* Value State - show data even during refresh if we have it */}
         {tokenData && (
           <div className={isLoading ? "opacity-70" : ""}>
-            <h3 className="text-sm font-medium mb-1 text-primary">Donations raised</h3>
+            <h3 className="text-sm font-medium mb-1 text-black">Donations raised</h3>
             <div className="flex items-center justify-center">
-              <span className="text-3xl font-bold text-primary">
+              <span className="text-3xl font-bold text-black">
                 {formatCurrency(tokenData.usdValue)}
               </span>
               {valueChange.direction !== 'neutral' && (
@@ -140,14 +140,14 @@ export default function TokenValueTracker({ walletAddress, tokenAddress }: Token
       {/* Token Details */}
       <div className="grid grid-cols-2 gap-4">
         <div className="rounded p-3 bg-primary/5 border border-primary">
-          <p className="text-xs mb-1 text-primary">$BANI balance</p>
-          <p className="font-medium text-gray-800">
+          <p className="text-xs mb-1 text-black">$BANI balance</p>
+          <p className="font-medium text-black">
             {tokenData ? formatNumber(tokenData.balance) : '-'}
           </p>
         </div>
         <div className="rounded p-3 bg-primary/5 border border-primary">
-          <p className="text-xs mb-1 text-primary">BANI price</p>
-          <p className="font-medium text-gray-800">
+          <p className="text-xs mb-1 text-black">BANI price</p>
+          <p className="font-medium text-black">
             {tokenData ? formatTokenPrice(tokenData.price) : '-'}
           </p>
         </div>
