@@ -84,20 +84,18 @@ export default function useTokenValue(walletAddress: string, tokenAddress: strin
   // Store previous data and manage reference points
   useEffect(() => {
     if (tokenData) {
-      // Set initial reference point to $0
+      // Set initial reference point
       if (!initialDataSet) {
-        setDayStartData({
-          ...tokenData,
-          usdValue: 0,
-          timestamp: Date.now() - (24 * 60 * 60 * 1000) // 24 hours ago
-        });
+        setDayStartData(tokenData);
+        setPreviousData(tokenData);
         setInitialDataSet(true);
+      } else if (!previousData || 
+          Math.abs(tokenData.usdValue - previousData.usdValue) > 0.0001) {
+        // Only update previous data if change is significant
+        setPreviousData(tokenData);
       }
-      
-      // Always update previous data for real-time tracking
-      setPreviousData(tokenData);
     }
-  }, [tokenData, initialDataSet]);
+  }, [tokenData, initialDataSet, previousData]);
 
   return {
     tokenData,

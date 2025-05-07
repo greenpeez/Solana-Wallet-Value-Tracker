@@ -31,19 +31,19 @@ export default function TokenValueTracker({ walletAddress, tokenAddress }: Token
 
   // Calculate percentage change considering both price and balance in real-time
   const calculatePercentageChange = useCallback(() => {
-    if (!tokenData || !previousData) return { direction: 'neutral', percentage: 0 };
+    if (!tokenData || !previousData || !dayStartData) return { direction: 'neutral', percentage: 0 };
     
     const currentValue = tokenData.usdValue;
-    const previousValue = previousData.usdValue;
+    const baseValue = dayStartData.usdValue;
     
-    if (previousValue === 0) return { direction: 'neutral', percentage: 0 };
+    if (baseValue === 0) return { direction: 'neutral', percentage: 0 };
     
-    const direction = currentValue > previousValue ? 'up' : 
-                     currentValue < previousValue ? 'down' : 'neutral';
-    const percentage = ((currentValue - previousValue) / previousValue) * 100;
+    const direction = currentValue > baseValue ? 'up' : 
+                     currentValue < baseValue ? 'down' : 'neutral';
+    const percentage = ((currentValue - baseValue) / baseValue) * 100;
     
-    return { direction, percentage };
-  }, [tokenData, previousData]);
+    return { direction, percentage: Math.abs(percentage) };
+  }, [tokenData, previousData, dayStartData]);
 
   // Format the last updated time
   const getLastUpdatedText = useCallback(() => {
